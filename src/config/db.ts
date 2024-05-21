@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { config } from "./config";
+import { conf } from "./conf";
 
 const connectDB = async () => {
   try {
@@ -12,7 +12,7 @@ const connectDB = async () => {
     });
 
     //the above tho listner is event so we have to first register that's why we write first before db connection
-    await mongoose.connect(config.mongodbUrl!);
+    await mongoose.connect(conf.mongodbUrl!);
   } catch (error) {
     console.log("Database connection failed!!", error);
     process.exit(1);
