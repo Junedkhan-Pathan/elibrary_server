@@ -1,5 +1,12 @@
-console.log("Project setup")
+import app from "./src/app";
+import { config } from "./src/config/config";
+import connectDB from "./src/config/db";
 
-function abc(num:string,num1:string) {
-    return
-}
+const startServer = async() => {
+  await connectDB();
+  app.listen(config.port, () => {
+    console.log(`app in running on port:${config.port}`);
+  });
+};
+
+startServer();
