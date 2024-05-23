@@ -4,7 +4,7 @@ import { registerHandler, signInHandler } from './userController';
 const userRoutes = express.Router();
 
 userRoutes.post('/register',registerHandler);
-userRoutes.post('/signin',signInHandler);
+userRoutes.post('/login',signInHandler);
 
 
 export default userRoutes
