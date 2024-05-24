@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import { conf } from "../config/conf";
 
 export interface IUser extends Document {
+  _id:string
   username: string;
   email: string;
   password: string;
