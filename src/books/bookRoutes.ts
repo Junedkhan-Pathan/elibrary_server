@@ -5,6 +5,7 @@ import {
   updateBook,
   listBooks,
   getOneBook,
+  deleteBook,
 } from "./bookController";
 import authMiddleware from "../middlewares/authMiddleware";
 
@@ -30,5 +31,10 @@ bookRoutes.patch(
 );
 bookRoutes.get("/", listBooks);
 bookRoutes.get("/:bookId", getOneBook);
+bookRoutes.delete(
+  "/:bookId",
+  authMiddleware,
+  deleteBook
+);
 
 export default bookRoutes;

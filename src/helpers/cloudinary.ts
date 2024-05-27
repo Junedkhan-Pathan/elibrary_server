@@ -35,10 +35,21 @@ const uploadOnCloudinary = async (filename: string, format: string) => {
   }
 };
 
-const deleteFileFromCloudinary = async (fileId: string) => {
+const deleteFileFromCloudinary = async (filestring: string) => {
+  const getPublicId = filestring?.split("/").at(-1);
+  const [fileName, format] = getPublicId?.split(".") as string[];
+  const publicId =
+    format === "pdf" ? `all-books/${getPublicId}` : `books-cover/${fileName}`;
   try {
-    if (!fileId) return null;
-    const response = await cloudinary.uploader.destroy(fileId);
+    if (!getPublicId) return null;
+    const response =
+      format === "pdf"
+        ? await cloudinary.uploader.destroy(publicId, {
+            resource_type: "raw",
+          })
+        : await cloudinary.uploader.destroy(publicId, {
+            resource_type: "image",
+          });
     return response;
   } catch (error) {
     console.log("Error while delete from the ocloudinary", error);

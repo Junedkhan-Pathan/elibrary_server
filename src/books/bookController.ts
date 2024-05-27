@@ -95,13 +95,21 @@ const updateBook = asyncHandler(async (req, res) => {
     coverImage[0].filename,
     imgageFormat!
   );
-  const bookUpload = await uploadOnCloudinary(file[0].filename, fileFormat!);
-  // const bookUpload = (await coverImageResult?.url)
-  //   ? await uploadOnCloudinary(file[0])
-  //   : await deleteFileFromCloudinary(coverImageResult?.public_id);
+  let bookUpload;
+  if (coverImageResult?.url) {
+    bookUpload = await uploadOnCloudinary(file[0].filename, fileFormat!);
+    if (!bookUpload?.url) {
+      await deleteFileFromCloudinary(coverImageResult?.url);
+    }
+  }
 
   if (!coverImageResult || !bookUpload)
     res.status(500).json(new ApiError(500, "Failed uploading files!!"));
+
+  if (coverImageResult && bookUpload) {
+    await deleteFileFromCloudinary(tobeUpdateBook?.file!);
+    await deleteFileFromCloudinary(tobeUpdateBook?.coverImage!);
+  }
 
   const updatedBook = await Book.findOneAndUpdate(
     { _id: bookId },
@@ -144,4 +152,35 @@ const getOneBook = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Book successfully fetched!!", book));
 });
 
-export { createBook, updateBook, listBooks, getOneBook };
+const deleteBook = asyncHandler(async (req, res) => {
+  const _req = req as IUserAuth;
+  const { _id } = _req.user;
+  const bookId = req.params?.bookId;
+
+  const tobeDeleteBook = await Book.findOne({ _id: bookId });
+
+  if (!tobeDeleteBook)
+    res.status(401).json(new ApiError(401, "The book is not exist!!"));
+
+  if (tobeDeleteBook?.author.toString() !== _id)
+    res.status(403).json(new ApiError(403, "You can't delete other books!!"));
+
+  const prevFile = tobeDeleteBook?.file;
+  const prevCoverImage = tobeDeleteBook?.coverImage;
+
+  if (prevCoverImage && prevFile) {
+    await deleteFileFromCloudinary(prevFile);
+    await deleteFileFromCloudinary(prevCoverImage);
+  }
+
+  const deleteBook = await Book.deleteOne({ _id: bookId });
+
+  if (!deleteBook)
+    res.status(500).json(new ApiError(500, "Failed to delete books!!"));
+
+  res
+    .status(201)
+    .json(new ApiResponse(200, "Book deleted successfully!!", deleteBook));
+});
+
+export { createBook, updateBook, listBooks, getOneBook, deleteBook };
