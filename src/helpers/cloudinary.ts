@@ -9,27 +9,21 @@ cloudinary.config({
   api_secret: conf.clodinary_secret,
 });
 
-const uploadOnCloudinary = async (file: {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  destination: string;
-  filename: string;
-  path: string;
-  size: number;
-}) => {
-  const { destination, filename, mimetype } = file;
-  const formatType = mimetype?.split("/")?.at(-1);
-  const filePath = path.resolve(__dirname + "./../../public/data", filename);
+const uploadOnCloudinary = async (filename: string, format: string) => {
+  const filePath = path.resolve(__dirname, "./../../public/data", filename);
+
+  const opt: any = {
+    use_filename: true,
+    filename_override: filename,
+    folder: format === "pdf" ? "all-books" : "books-cover",
+    format,
+  };
+
+  if (format === "pdf") opt.resource_type = "raw";
 
   try {
-    if (!destination) return null;
-    const response = await cloudinary.uploader.upload(filePath, {
-      filename_override: filename,
-      folder: formatType === "pdf" ? "all-books" : "books-cover",
-      format: formatType,
-    });
+    if (!filePath) return null;
+    const response = await cloudinary.uploader.upload(filePath, opt);
     fs.unlinkSync(filePath);
     return response;
   } catch (error) {

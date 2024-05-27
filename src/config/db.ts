@@ -12,7 +12,7 @@ const connectDB = async () => {
     });
 
     //the above tho listner is event so we have to first register that's why we write first before db connection
-    await mongoose.connect(conf.mongodbUrl!);
+    await mongoose.connect(conf.mongodbUrl as string);
   } catch (error) {
     console.log("Database connection failed!!", error);
     process.exit(1);
