@@ -132,4 +132,16 @@ const listBooks = asyncHandler(async (req, res) => {
   res.status(402).json(new ApiResponse(200, "All books!!", books));
 });
 
-export { createBook, updateBook, listBooks };
+const getOneBook = asyncHandler(async (req, res) => {
+  const bookId = req.params.bookId;
+
+  const book = await Book.findOne({ _id: bookId });
+
+  if (!book) res.status(402).json(new ApiError(402, "Book not found!!"));
+
+  res
+    .status(402)
+    .json(new ApiResponse(200, "Book successfully fetched!!", book));
+});
+
+export { createBook, updateBook, listBooks, getOneBook };

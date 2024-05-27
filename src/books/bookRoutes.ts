@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer";
-import { createBook, updateBook, listBooks } from "./bookController";
+import {
+  createBook,
+  updateBook,
+  listBooks,
+  getOneBook,
+} from "./bookController";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const bookRoutes = Router();
@@ -23,9 +28,7 @@ bookRoutes.patch(
   ]),
   updateBook
 );
-bookRoutes.get(
-  "/",
-  listBooks
-);
+bookRoutes.get("/", listBooks);
+bookRoutes.get("/:bookId", getOneBook);
 
 export default bookRoutes;
